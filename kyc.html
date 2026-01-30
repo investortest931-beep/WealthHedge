@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Verification | WealthHedge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-[#f8f9fa] min-h-screen pb-24">
+    <nav class="bg-white border-b px-6 py-4 sticky top-0 z-50">
+        <div class="flex items-center gap-2 max-w-xl mx-auto">
+            <button onclick="window.location.href='dashboard.html'" class="text-slate-400 hover:text-blue-600 transition p-2">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="text-xl font-bold">Identity <span class="text-blue-600">Verification</span></h1>
+        </div>
+    </nav>
+
+    <div id="kyc-manager" class="max-w-xl mx-auto px-4 mt-8">
+        <!-- Initial Loading View -->
+        <div id="view-loading" class="bg-white p-12 rounded-3xl shadow-sm text-center border border-slate-100">
+            <div class="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-slate-500 font-medium">Syncing with secure server...</p>
+        </div>
+
+        <!-- Submission Form -->
+        <div id="view-form" class="hidden bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <h2 class="text-lg font-bold text-slate-800">Submit Documents</h2>
+                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mt-1">Encrypted 256-bit Upload</p>
+            </div>
+
+            <div id="reject-msg" class="hidden bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3">
+                <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                <p class="text-xs text-red-700 leading-tight font-medium">Your previous documents were rejected. Please ensure images are clear and not cropped.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">Current Home Address</label>
+                    <textarea id="inp-address" placeholder="Flat number, Street name, City, Country" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm focus:ring-2 ring-blue-500/20 h-24 transition-all"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div id="box-front" onclick="triggerFile('file-front')" class="group border-2 border-dashed border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-slate-50 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all h-36 relative overflow-hidden">
+                        <i class="fas fa-id-card text-slate-300 text-2xl mb-2 group-hover:text-blue-400"></i>
+                        <span class="text-[9px] font-bold text-slate-500 uppercase">Front of ID</span>
+                        <input type="file" id="file-front" class="hidden" accept="image/*" onchange="handleFile(this, 'box-front', 'front')">
+                    </div>
+
+                    <div id="box-back" onclick="triggerFile('file-back')" class="group border-2 border-dashed border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center bg-slate-50 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all h-36 relative overflow-hidden">
+                        <i class="fas fa-id-card text-slate-300 text-2xl mb-2 group-hover:text-blue-400"></i>
+                        <span class="text-[9px] font-bold text-slate-500 uppercase">Back of ID</span>
+                        <input type="file" id="file-back" class="hidden" accept="image/*" onchange="handleFile(this, 'box-back', 'back')">
+                    </div>
+                </div>
+
+                <button id="btn-submit" onclick="submit()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    Submit Verification
+                </button>
+            </div>
+        </div>
+
+        <!-- In Review State -->
+        <div id="view-review" class="hidden bg-white p-10 rounded-3xl shadow-sm border border-slate-100 text-center">
+            <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <i class="fas fa-user-clock text-3xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">Under Review</h2>
+            <p class="text-sm text-slate-500 mt-3 leading-relaxed">We've received your documents. Our compliance team is verifying your identity. This usually takes <span class="font-bold text-slate-700">2-24 hours</span>.</p>
+            <button onclick="window.location.href='dashboard.html'" class="mt-8 w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition">Back to Dashboard</button>
+        </div>
+
+        <!-- Verified State -->
+        <div id="view-verified" class="hidden bg-white p-10 rounded-3xl shadow-sm border border-slate-100 text-center">
+            <div class="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check-double text-3xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">Account Verified</h2>
+            <p class="text-sm text-slate-500 mt-3">Identity confirmed! Your withdrawal limits have been increased and your account is in good standing.</p>
+            <button onclick="window.location.href='dashboard.html'" class="mt-8 w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-100">Continue to App</button>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS URL WITH YOUR DEPLOYED GOOGLE SCRIPT URL
+        const API = "https://script.google.com/macros/s/AKfycbzeaMSjEhkew7y8P9X4jKzIyxbSh8zYIN37NgMzDSW_cvK0N2iHwlTuTuSdrQt-9Rr2ZA/exec";
+        
+        let userToken = JSON.parse(localStorage.getItem('wh_user'));
+        let images = { front: null, back: null };
+
+        async function init() {
+            if(!userToken) return window.location.href = 'login.html';
+
+            try {
+                const response = await fetch(API, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_data', email: userToken.id })
+                });
+                const data = await response.json();
+                
+                // Hide all views first
+                document.getElementById('view-loading').classList.add('hidden');
+                
+                const status = data.user.kyc || "Pending";
+
+                if (status === "Verified") {
+                    document.getElementById('view-verified').classList.remove('hidden');
+                } else if (status === "In Review") {
+                    document.getElementById('view-review').classList.remove('hidden');
+                } else {
+                    document.getElementById('view-form').classList.remove('hidden');
+                    if(status === "Rejected") document.getElementById('reject-msg').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server Connection Error. Please check your Script URL or Internet.");
+            }
+        }
+
+        function triggerFile(id) {
+            document.getElementById(id).click();
+        }
+
+        function handleFile(input, boxId, key) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const box = document.getElementById(boxId);
+                    box.style.backgroundImage = `url(${e.target.result})`;
+                    box.style.backgroundSize = 'cover';
+                    box.style.backgroundPosition = 'center';
+                    box.classList.add('border-blue-500', 'border-solid');
+                    box.innerHTML = ''; // Remove icons/text
+                    images[key] = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function submit() {
+            const addr = document.getElementById('inp-address').value.trim();
+            if(!addr) return alert("Please enter your residential address.");
+            if(!images.front || !images.back) return alert("Please upload both ID images.");
+
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Uploading...`;
+
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'submit_kyc',
+                        email: userToken.id,
+                        address: addr,
+                        frontImage: images.front,
+                        backImage: images.back
+                    })
+                });
+                const result = await res.json();
+                
+                if(result.status === 'success') {
+                    alert("Submission Successful! Your account is now under review.");
+                    window.location.reload();
+                } else {
+                    alert("Submission Error: " + result.msg);
+                }
+            } catch (err) {
+                alert("Upload failed. The files might be too large or your internet is unstable.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Submit Verification";
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

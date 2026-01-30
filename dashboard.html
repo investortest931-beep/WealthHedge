@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | WealthHedge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#f8f9fa] min-h-screen pb-24">
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                <i class="fas fa-chart-line text-sm"></i>
+            </div>
+            <h1 class="text-xl font-bold">Wealth<span class="text-blue-600">Hedge</span></h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="user-email-display" class="hidden md:inline text-xs text-slate-400 font-medium"></span>
+            <button onclick="logout()" class="text-red-500 text-sm font-bold px-4 py-2 hover:bg-red-50 rounded-lg transition">Logout</button>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
+        <!-- Welcome Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">Welcome, <span id="u-name" class="text-blue-600">...</span></h2>
+                <p class="text-slate-500 text-sm">Managing your assets with precision.</p>
+            </div>
+            <div id="kyc-badge-container">
+                <!-- Dynamic KYC Badge will be injected here -->
+                <div class="animate-pulse bg-slate-200 h-8 w-24 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Card -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-3xl text-white shadow-xl shadow-blue-200 relative overflow-hidden">
+                <i class="fas fa-wallet absolute -bottom-4 -right-2 text-7xl opacity-10"></i>
+                <p class="text-xs uppercase opacity-80 font-bold tracking-widest">Available Balance</p>
+                <h3 class="text-4xl font-bold mt-2" id="u-balance">$0.00</h3>
+                <div class="mt-6 flex gap-2">
+                    <button onclick="window.location.href='deposit.html'" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs font-bold backdrop-blur-sm transition">Deposit</button>
+                    <button onclick="window.location.href='withdrawal.html'" class="bg-white text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">Withdraw</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <p class="text-xs uppercase text-slate-400 font-bold tracking-widest">Referral Stats</p>
+                <h3 class="text-4xl font-bold mt-2 text-slate-800" id="u-refs">0</h3>
+                <div class="mt-4 flex flex-col gap-2 bg-slate-50 p-3 rounded-xl border border-dashed border-slate-300">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-slate-500">CODE:</span>
+                        <span class="text-xs font-mono font-bold text-blue-600" id="u-code">...</span>
+                    </div>
+                    <button onclick="copyRefLink()" class="w-full py-1 text-[10px] bg-blue-50 text-blue-600 rounded font-bold hover:bg-blue-100 transition">Copy Referral Link</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <p class="text-xs uppercase text-slate-400 font-bold tracking-widest">Account Security</p>
+                    <h3 class="text-xl font-bold mt-2 text-slate-800" id="u-security-text">Loading...</h3>
+                </div>
+                <div class="mt-4">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="security-progress" class="bg-blue-600 h-full w-0 transition-all duration-1000"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Plans -->
+        <div class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-rocket text-blue-600"></i> Active Investment Plans
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Plan cards with redirects to plans.html -->
+                <div onclick="window.location.href='plans.html'" class="cursor-pointer bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-300 transition-all group">
+                    <h4 class="font-bold text-slate-800">Starter Edge</h4>
+                    <p class="text-3xl font-black text-blue-600 mt-2">12% <span class="text-xs text-slate-400 font-normal">/mo</span></p>
+                    <button class="w-full mt-6 bg-slate-50 text-slate-700 py-3 rounded-xl font-bold group-hover:bg-blue-600 group-hover:text-white transition-all">Details</button>
+                </div>
+                <div onclick="window.location.href='plans.html'" class="cursor-pointer bg-white p-6 rounded-2xl border-2 border-blue-600 shadow-xl relative transition-all hover:scale-[1.02]">
+                    <div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 font-bold rounded-bl-lg">POPULAR</div>
+                    <h4 class="font-bold text-slate-800">Alpha Pro</h4>
+                    <p class="text-3xl font-black text-blue-600 mt-2">25% <span class="text-xs text-slate-400 font-normal">/mo</span></p>
+                    <button class="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold">Details</button>
+                </div>
+                <div onclick="window.location.href='plans.html'" class="cursor-pointer bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-300 transition-all group">
+                    <h4 class="font-bold text-slate-800">Whale Wealth</h4>
+                    <p class="text-3xl font-black text-blue-600 mt-2">45% <span class="text-xs text-slate-400 font-normal">/mo</span></p>
+                    <button class="w-full mt-6 bg-slate-50 text-slate-700 py-3 rounded-xl font-bold group-hover:bg-blue-600 group-hover:text-white transition-all">Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-12">
+            <div class="p-6 border-b flex justify-between items-center bg-white">
+                <h2 class="font-bold text-slate-800">Recent Activity</h2>
+                <button onclick="init()" class="text-blue-600 text-xs font-bold hover:underline"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 text-[10px] text-slate-400 uppercase tracking-widest">
+                        <tr>
+                            <th class="p-4 font-bold">Date</th>
+                            <th class="p-4 font-bold">Activity</th>
+                            <th class="p-4 font-bold">Amount</th>
+                            <th class="p-4 font-bold">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hist-body" class="text-sm">
+                        <tr><td colspan="4" class="p-12 text-center text-slate-400">
+                            <i class="fas fa-circle-notch fa-spin text-blue-600 text-2xl mb-2"></i><br>
+                            Fetching history...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom App Bar -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50 md:hidden">
+        <button onclick="window.location.href='dashboard.html'" class="flex flex-col items-center gap-1 text-blue-600">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button onclick="window.location.href='plans.html'" class="flex flex-col items-center gap-1 text-slate-400">
+            <i class="fas fa-chart-pie text-xl"></i>
+            <span class="text-[10px] font-bold">Plans</span>
+        </button>
+        <button onclick="window.location.href='deposit.html'" class="bg-blue-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg -mt-8 border-4 border-[#f8f9fa]">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button onclick="window.location.href='history.html'" class="flex flex-col items-center gap-1 text-slate-400">
+            <i class="fas fa-history text-xl"></i>
+            <span class="text-[10px] font-bold">History</span>
+        </button>
+        <button onclick="window.location.href='profile.html'" class="flex flex-col items-center gap-1 text-slate-400">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-[10px] font-bold">Profile</span>
+        </button>
+    </div>
+
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbzeaMSjEhkew7y8P9X4jKzIyxbSh8zYIN37NgMzDSW_cvK0N2iHwlTuTuSdrQt-9Rr2ZA/exec";
+        let userToken = JSON.parse(localStorage.getItem('wh_user'));
+        let currentRefCode = "";
+
+        async function init() {
+            if(!userToken || !userToken.id) return window.location.href = 'login.html';
+            document.getElementById('user-email-display').innerText = userToken.id;
+            
+            try {
+                const res = await fetch(API, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'get_data', email: userToken.id }) 
+                });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    const u = data.user;
+                    currentRefCode = u.refCode || 'N/A';
+                    
+                    document.getElementById('u-name').innerText = u.firstName;
+                    document.getElementById('u-balance').innerText = `$${Number(u.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    document.getElementById('u-refs').innerText = u.referrals || 0;
+                    document.getElementById('u-code').innerText = currentRefCode;
+                    
+                    updateKYCDisplay(u.kyc);
+                    renderHistory(data.history);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function updateKYCDisplay(status) {
+            const container = document.getElementById('kyc-badge-container');
+            const secText = document.getElementById('u-security-text');
+            const secProg = document.getElementById('security-progress');
+            
+            let badgeHtml = "";
+            let securityLevel = "Low";
+            let progressWidth = "33%";
+
+            switch(status) {
+                case 'Verified':
+                    badgeHtml = `<span class="px-4 py-1.5 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 uppercase tracking-wider"><i class="fas fa-check-circle mr-1"></i> Verified</span>`;
+                    securityLevel = "Maximum";
+                    progressWidth = "100%";
+                    break;
+                case 'In Review':
+                    badgeHtml = `<span class="px-4 py-1.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200 uppercase tracking-wider"><i class="fas fa-clock mr-1"></i> In Review</span>`;
+                    securityLevel = "Pending Review";
+                    progressWidth = "66%";
+                    break;
+                case 'Rejected':
+                    badgeHtml = `<button onclick="window.location.href='kyc.html'" class="px-4 py-1.5 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200 uppercase tracking-wider"><i class="fas fa-times-circle mr-1"></i> Rejected (Retry)</button>`;
+                    securityLevel = "Verification Failed";
+                    progressWidth = "10%";
+                    break;
+                default: // Pending
+                    badgeHtml = `<button onclick="window.location.href='kyc.html'" class="px-4 py-1.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-full border border-orange-200 uppercase tracking-wider">Verify Identity</button>`;
+                    securityLevel = "Identity Required";
+                    progressWidth = "33%";
+            }
+
+            container.innerHTML = badgeHtml;
+            secText.innerText = securityLevel;
+            secProg.style.width = progressWidth;
+        }
+
+        function renderHistory(history) {
+            const body = document.getElementById('hist-body');
+            if(!history || history.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" class="p-12 text-center text-slate-400 italic">No activity yet.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = history.map(h => `
+                <tr class="border-t border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td class="p-4 text-xs text-slate-500">${new Date(h.date).toLocaleDateString()}</td>
+                    <td class="p-4 font-semibold text-slate-700">${h.desc}</td>
+                    <td class="p-4 font-bold text-blue-600">$${Number(h.amt).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-tighter ${
+                            h.status === 'Completed' || h.status === 'Active' || h.status === 'Verified' ? 'bg-green-100 text-green-700' : 
+                            h.status === 'Pending' || h.status === 'Processing' || h.status === 'In Review' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'
+                        }">
+                            ${h.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function copyRefLink() {
+            const link = window.location.origin + "/signup.html?ref=" + currentRefCode;
+            const temp = document.createElement("input");
+            temp.value = link;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            alert("Referral link copied!");
+        }
+
+        function logout() { 
+            localStorage.removeItem('wh_user'); 
+            window.location.href = 'login.html'; 
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoLink Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-grad { background: linear-gradient(90deg, #3b82f6, #10b981); }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; color: #ef4444; } }
+        .warning-text { animation: pulse-red 1.5s infinite; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 min-h-screen">
+
+    <nav class="max-w-4xl mx-auto p-6 flex justify-between items-center">
+        <div class="text-xl font-black tracking-tighter text-white">CRYPTOLINK<span class="text-blue-500">PRO</span></div>
+        <div class="space-x-4 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <button onclick="showView('pay')" class="hover:text-blue-400">Pay</button>
+            <button onclick="showView('signup')" class="hover:text-blue-400">Signup</button>
+            <button onclick="showView('login')" class="hover:text-blue-400">Login</button>
+        </div>
+    </nav>
+
+    <div class="max-w-md mx-auto px-6 py-10">
+        
+        <!-- PAYMENT PAGE -->
+        <div id="view-pay" class="view space-y-6">
+            <div id="pay-init" class="glass p-8 rounded-3xl text-center">
+                <h2 class="text-2xl font-bold text-white mb-2">Checkout</h2>
+                <p class="text-slate-400 text-sm mb-6">Enter your email to receive a unique USDT address.</p>
+                <input type="email" id="email" placeholder="email@example.com" class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-2xl mb-4 outline-none focus:border-blue-500 transition">
+                <button onclick="getPayment()" id="pay-btn" class="w-full btn-grad text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20">Generate Payment Link</button>
+            </div>
+
+            <div id="pay-active" class="hidden glass p-8 rounded-3xl text-center relative overflow-hidden">
+                <div id="timer" class="text-5xl font-black mb-4 tracking-tighter">09:00</div>
+                <div id="qr-container" class="bg-white p-3 rounded-2xl inline-block mb-6"></div>
+                
+                <div class="text-left space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase">USDT Address (BEP20)</label>
+                        <div class="flex items-center bg-black/30 p-4 rounded-xl mt-1 group">
+                            <code id="addr" class="text-xs break-all flex-1 text-blue-300"></code>
+                            <button onclick="copyAddr()" class="text-white hover:text-blue-400 ml-2 font-bold text-xs uppercase">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <input type="text" id="txid" placeholder="Paste Transaction Hash (TxID)" class="w-full bg-slate-900/50 border border-white/10 p-3 rounded-xl text-sm outline-none">
+                        <button onclick="submitTx()" class="w-full bg-slate-100 text-black font-bold py-3 rounded-xl text-sm hover:bg-white transition">I Have Sent Payment</button>
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-6 leading-relaxed">Ensure you send USDT via the <b>BEP20 (BSC)</b> network. Other networks will result in permanent loss.</p>
+            </div>
+        </div>
+
+        <!-- SIGNUP PAGE -->
+        <div id="view-signup" class="view hidden glass p-8 rounded-3xl">
+            <h2 class="text-xl font-bold text-white mb-4">Partner Signup</h2>
+            <div class="space-y-4">
+                <input type="email" id="s-email" placeholder="Work Email" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl">
+                <input type="password" id="s-pass" placeholder="Password" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl">
+                <button onclick="doSignup()" class="w-full btn-grad py-4 rounded-2xl font-bold text-white">Create Partner Account</button>
+                <div id="s-msg" class="text-sm font-medium text-blue-400 text-center"></div>
+            </div>
+        </div>
+
+        <!-- LOGIN / DASHBOARD -->
+        <div id="view-login" class="view hidden glass p-8 rounded-3xl">
+            <h2 class="text-xl font-bold text-white mb-4">Partner Login</h2>
+            <div class="space-y-4">
+                <input type="text" id="l-ref" placeholder="Referral ID (e.g., REF1234)" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl">
+                <input type="password" id="l-pass" placeholder="Password" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl">
+                <button onclick="doLogin()" class="w-full btn-grad py-4 rounded-2xl font-bold">Access Dashboard</button>
+            </div>
+        </div>
+
+        <div id="view-dash" class="view hidden space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">Your Traffic</h2>
+                <button onclick="showView('login')" class="text-xs text-slate-500 underline">Logout</button>
+            </div>
+            <div id="dash-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8b2AUwokNMRphmjQQakcGsJJT5ETxi7lclIiFDGV7dUmu33VIaX6mQmewmxpoQmUY/exec"; 
+        let timer;
+
+        function showView(v) {
+            document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-'+v).classList.remove('hidden');
+        }
+
+        async function getPayment() {
+            const email = document.getElementById('email').value;
+            const ref = new URLSearchParams(window.location.search).get('ref') || 'DEFAULT';
+            if(!email) return alert("Email required");
+            
+            document.getElementById('pay-btn').innerText = "Working...";
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getPayment', email, refId: ref })});
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                document.getElementById('pay-init').classList.add('hidden');
+                document.getElementById('pay-active').classList.remove('hidden');
+                document.getElementById('addr').innerText = data.wallet;
+                document.getElementById('qr-container').innerHTML = '';
+                new QRCode(document.getElementById("qr-container"), { text: data.wallet, width: 180, height: 180 });
+                startTimer(data.expires);
+                localStorage.setItem('session', JSON.stringify({ email, ...data }));
+            }
+        }
+
+        function startTimer(expiry) {
+            clearInterval(timer);
+            const el = document.getElementById('timer');
+            timer = setInterval(() => {
+                const diff = expiry - new Date().getTime();
+                if(diff <= 0) {
+                    clearInterval(timer);
+                    el.innerText = "00:00";
+                    el.classList.add('text-red-500');
+                    alert("Session expired. Please refresh.");
+                    return;
+                }
+                const m = Math.floor(diff/60000);
+                const s = Math.floor((diff%60000)/1000);
+                el.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(m < 1) el.classList.add('warning-text');
+            }, 1000);
+        }
+
+        async function doSignup() {
+            const email = document.getElementById('s-email').value;
+            const password = document.getElementById('s-pass').value;
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'partnerSignup', email, password })});
+            const data = await res.json();
+            if(data.status === 'success') {
+                document.getElementById('s-msg').innerHTML = `Partner ID: <b>${data.refId}</b><br>Link: ${window.location.origin}${window.location.pathname}?ref=${data.refId}`;
+            } else { alert(data.message); }
+        }
+
+        async function doLogin() {
+            const refId = document.getElementById('l-ref').value;
+            const password = document.getElementById('l-pass').value;
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'partnerLogin', refId, password })});
+            const data = await res.json();
+            if(data.status === 'success') {
+                showView('dash');
+                document.getElementById('dash-list').innerHTML = data.logs.reverse().map(l => `
+                    <div class="glass p-4 rounded-2xl border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-sm font-bold text-white">${l[1]}</div>
+                            <div class="text-[10px] text-slate-500">${new Date(l[0]).toLocaleDateString()}</div>
+                        </div>
+                        <div class="text-[10px] text-slate-400 break-all font-mono bg-black/20 p-2 rounded">${l[4] || 'No Hash Submitted'}</div>
+                    </div>
+                `).join('') || '<p class="text-center text-slate-500">No payments found yet.</p>';
+            } else { alert(data.message); }
+        }
+
+        function copyAddr() {
+            const txt = document.getElementById('addr').innerText;
+            const input = document.createElement('textarea');
+            input.value = txt; document.body.appendChild(input);
+            input.select(); document.execCommand('copy');
+            document.body.removeChild(input);
+            alert("Address Copied!");
+        }
+
+        async function submitTx() {
+            const session = JSON.parse(localStorage.getItem('session'));
+            const txId = document.getElementById('txid').value;
+            if(!txId) return alert("Please enter the TxID");
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'submitTx', email: session.email, wallet: session.wallet, txId, refId: session.refId || 'DEFAULT' })});
+            alert("Submitted. Please wait for manual verification.");
+        }
+
+        window.onload = () => {
+            const s = JSON.parse(localStorage.getItem('session'));
+            if(s && s.expires > new Date().getTime()) {
+                document.getElementById('pay-init').classList.add('hidden');
+                document.getElementById('pay-active').classList.remove('hidden');
+                document.getElementById('addr').innerText = s.wallet;
+                new QRCode(document.getElementById("qr-container"), { text: s.wallet, width: 180, height: 180 });
+                startTimer(s.expires);
+            }
+        };
+    </script>
+</body>
+</html>

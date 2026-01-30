@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | WealthHedge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+        <h1 class="text-2xl font-bold text-center mb-6">Wealth<span class="text-blue-600">Hedge</span></h1>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-slate-500 ml-1">EMAIL ADDRESS</label>
+                <input type="email" name="email" placeholder="email@example.com" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-500 ml-1">PASSWORD</label>
+                <input type="password" name="password" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+            </div>
+            <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all">Secure Login</button>
+        </form>
+        <p class="mt-6 text-center text-sm">New to the platform? <a href="signup.html" class="text-blue-600 font-bold">Sign up</a></p>
+    </div>
+
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbzeaMSjEhkew7y8P9X4jKzIyxbSh8zYIN37NgMzDSW_cvK0N2iHwlTuTuSdrQt-9Rr2ZA/exec";
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            data.action = 'login';
+            try {
+                const res = await fetch(API, { method: 'POST', body: JSON.stringify(data) });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    const expiry = new Date().getTime() + (14 * 24 * 60 * 60 * 1000);
+                    // Session stores email as ID
+                    localStorage.setItem('wh_user', JSON.stringify({id: result.email, expiry}));
+                    window.location.href = 'dashboard.html';
+                } else { alert(result.msg); }
+            } catch (err) { alert("Database connection error"); }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | WealthHedge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-xl w-full bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+        <h2 class="text-3xl font-bold text-center mb-2">Wealth<span class="text-blue-600">Hedge</span></h2>
+        <p class="text-center text-slate-500 mb-8 text-sm">Fill in your details to start investing</p>
+        
+        <form id="regForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" name="firstName" placeholder="First Name" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+                <input type="text" name="lastName" placeholder="Last Name" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="email" name="email" placeholder="Email Address (Primary Key)" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+                <input type="text" name="phone" placeholder="Phone Number" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <select name="gender" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div class="relative">
+                    <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] text-slate-400">Date of Birth</label>
+                    <input type="date" name="dob" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" name="username" id="username" placeholder="Username" required readonly class="w-full p-3 bg-slate-100 border rounded-xl outline-none cursor-not-allowed">
+                <input type="password" name="password" id="password" placeholder="Password (8+ chars, 1 Cap, Alphanumeric)" required class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-blue-500/20">
+            </div>
+
+            <input type="text" name="referredBy" id="referredBy" placeholder="Referral Code (Optional)" class="w-full p-3 bg-slate-50 border border-dashed rounded-xl outline-none">
+
+            <button type="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all active:scale-95">Create Account</button>
+        </form>
+        <p class="mt-6 text-center text-sm">Already have an account? <a href="login.html" class="text-blue-600 font-bold">Login</a></p>
+    </div>
+
+    <script>
+        const API = "https://script.google.com/macros/s/AKfycbzeaMSjEhkew7y8P9X4jKzIyxbSh8zYIN37NgMzDSW_cvK0N2iHwlTuTuSdrQt-9Rr2ZA/exec";
+
+        // 1. Auto-generate username & 2. Get referral code from link
+        window.addEventListener('DOMContentLoaded', () => {
+            // Generate Username: "WH" + timestamp snippet
+            const randomID = Math.random().toString(36).substring(2, 7).toUpperCase();
+            document.getElementById('username').value = "WH_" + randomID;
+
+            // Get 'ref' from URL (e.g., register.html?ref=INVITE123)
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                document.getElementById('referredBy').value = refCode;
+            }
+        });
+
+        document.getElementById('regForm').onsubmit = async (e) => {
+            e.preventDefault();
+
+            // 3. Password Validation Logic
+            const password = document.getElementById('password').value;
+            // Regex: At least 8 chars, 1 uppercase, 1 lowercase, 1 number
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
+            if (!passRegex.test(password)) {
+                alert("Password must be at least 8 characters, include at least one capital letter and one number.");
+                return;
+            }
+
+            const btn = e.target.querySelector('button');
+            btn.disabled = true; 
+            btn.innerText = "Processing...";
+            
+            const data = Object.fromEntries(new FormData(e.target));
+            data.action = 'signup';
+
+            try {
+                const res = await fetch(API, { method: 'POST', body: JSON.stringify(data) });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    alert("Account Created Successfully!");
+                    window.location.href = 'login.html';
+                } else { 
+                    alert(result.msg); 
+                }
+            } catch (err) { 
+                alert("Network error. Please try again."); 
+            } finally {
+                btn.disabled = false; 
+                btn.innerText = "Create Account";
+            }
+        };
+    </script>
+</body>
+</html>
