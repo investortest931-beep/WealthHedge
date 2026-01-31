@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Plans | WealthHedge</title>
+    <title>Investment Marketplace | WealthHedge</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,14 +16,12 @@
 </head>
 <body class="bg-[#f8f9fa] min-h-screen pb-24">
 
-    <!-- Community Ticker -->
     <div class="ticker-wrap text-[10px] font-bold uppercase tracking-widest sticky top-0 z-[60]">
         <div class="ticker">
-            🚀 User @david_fx just earned $4,200 from Whale Wealth Plan! • 💹 BTC/USD Up 3.4% • 📊 Apple Stock Portfolio hits 30-day target • 🛢️ Oil Commodity plan maturity reached for 15 users • 💎 Community Growth: 5,000+ Active Investors
+            💹 LIVE UPDATES: New "PlanDetails" protocol active • Diversified portfolio tracking enabled • Instant maturity settlement for all community plans • 💎 Total Assets Under Management: $2.4M
         </div>
     </div>
 
-    <!-- Top Navigation -->
     <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-[36px] z-50">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
@@ -37,13 +35,13 @@
         </div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
+    <div class="max-w-6xl mx-auto px-4 mt-8 space-y-12">
         
-        <!-- Welcome Header -->
+        <!-- Welcome & Balance -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-bold text-slate-900">Investment <span class="text-blue-600">Plans</span></h2>
-                <p class="text-slate-500 text-sm">Grow your wealth with community-backed assets.</p>
+                <p class="text-slate-500 text-sm">Real-time marketplace driven by Spreadsheet Cloud.</p>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
                 <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
@@ -51,7 +49,7 @@
                 </div>
                 <div>
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Your Balance</p>
-                    <h3 id="u-balance" class="text-xl font-bold text-slate-800">$0.00</h3>
+                    <h3 id="u-balance" class="text-xl font-bold text-slate-800">...</h3>
                 </div>
             </div>
         </div>
@@ -59,139 +57,56 @@
         <!-- Section: Active Portfolio -->
         <div class="space-y-6">
             <h2 class="text-xl font-bold flex items-center gap-2">
-                <i class="fas fa-chart-line text-blue-600"></i> My Active Portfolio
+                <i class="fas fa-chart-line text-blue-600"></i> Active Portfolio
             </h2>
-            <div id="active-plans-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Loading State -->
-                <div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center text-slate-400 col-span-full">
-                    <i class="fas fa-circle-notch fa-spin text-blue-600 mb-2"></i>
-                    <p class="text-xs font-bold uppercase tracking-widest">Fetching your active investments...</p>
-                </div>
+            <div id="active-plans-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Loaded via JS -->
             </div>
         </div>
 
-        <!-- Section: Marketplace -->
+        <!-- Section: Dynamic Marketplace -->
         <div class="space-y-6">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <i class="fas fa-shop text-blue-600"></i> Opportunity Marketplace
-                </h2>
-                <div class="flex gap-2 overflow-x-auto no-scrollbar">
-                    <button class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold">ALL</button>
-                    <button class="bg-white text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-bold border">STOCKS</button>
-                    <button class="bg-white text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-bold border">CRYPTO</button>
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-shop text-blue-600"></i> Spreadsheet Marketplace
+            </h2>
+            <div id="marketplace-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Loading State -->
+                <div class="col-span-full py-20 text-center text-slate-400">
+                    <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-blue-600"></i>
+                    <p class="text-xs font-black uppercase tracking-widest">Syncing plans from database...</p>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <!-- Starter Edge -->
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between plan-card">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                                <i class="fas fa-seedling text-xl"></i>
-                            </div>
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Low Risk</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-lg">Starter Edge</h4>
-                        <p class="text-xs text-slate-400 font-bold mb-4 uppercase tracking-tighter">Stocks & Indices</p>
-                        <p class="text-4xl font-black text-blue-600 mb-4">12% <span class="text-xs text-slate-400 font-normal">/30d</span></p>
-                        <p class="text-xs text-slate-500 leading-relaxed">Diversified portfolio of S&P 500 blue-chip stocks. Designed for steady, safe growth.</p>
-                    </div>
-                    <button onclick="processPurchase('Starter Edge', 100, 0.12, 'Stocks')" class="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black text-xs tracking-widest hover:bg-blue-600 transition-all shadow-lg">INVEST $100</button>
-                </div>
-
-                <!-- Alpha Pro -->
-                <div class="bg-white p-8 rounded-3xl border-2 border-blue-600 shadow-xl shadow-blue-100 flex flex-col justify-between plan-card relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-black px-4 py-1 rounded-full tracking-widest uppercase shadow-lg">Most Popular</div>
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                                <i class="fas fa-bolt-lightning text-xl"></i>
-                            </div>
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Balanced</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-lg">Alpha Pro</h4>
-                        <p class="text-xs text-blue-400 font-bold mb-4 uppercase tracking-tighter">Crypto & Tech Portfolio</p>
-                        <p class="text-4xl font-black text-blue-600 mb-4">25% <span class="text-xs text-slate-400 font-normal">/30d</span></p>
-                        <p class="text-xs text-slate-500 leading-relaxed">Aggressive tech stocks paired with top 10 cryptocurrency assets for optimized returns.</p>
-                    </div>
-                    <button onclick="processPurchase('Alpha Pro', 1000, 0.25, 'Hybrid')" class="w-full mt-8 bg-blue-600 text-white py-4 rounded-2xl font-black text-xs tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-200">INVEST $1,000</button>
-                </div>
-
-                <!-- Whale Wealth -->
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between plan-card">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
-                                <i class="fas fa-gem text-xl"></i>
-                            </div>
-                            <span class="bg-amber-50 text-amber-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">High Yield</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-lg">Whale Wealth</h4>
-                        <p class="text-xs text-amber-500 font-bold mb-4 uppercase tracking-tighter">Commodities & Metals</p>
-                        <p class="text-4xl font-black text-blue-600 mb-4">45% <span class="text-xs text-slate-400 font-normal">/30d</span></p>
-                        <p class="text-xs text-slate-500 leading-relaxed">Exposure to Gold, Silver, and Crude Oil. High volatility strategy for maximum accumulation.</p>
-                    </div>
-                    <button onclick="processPurchase('Whale Wealth', 5000, 0.45, 'Commodity')" class="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black text-xs tracking-widest hover:bg-amber-600 transition-all shadow-lg">INVEST $5,000</button>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Mobile Navigation Bar -->
+    <!-- Mobile Navigation -->
     <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50 md:hidden">
-        <button onclick="window.location.href='dashboard.html'" class="flex flex-col items-center gap-1 text-slate-400">
-            <i class="fas fa-home text-xl"></i>
-            <span class="text-[10px] font-bold">Home</span>
-        </button>
-        <button onclick="window.location.href='plans.html'" class="flex flex-col items-center gap-1 text-blue-600">
-            <i class="fas fa-chart-pie text-xl"></i>
-            <span class="text-[10px] font-bold">Plans</span>
-        </button>
-        <button onclick="window.location.href='deposit.html'" class="bg-blue-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg -mt-8 border-4 border-[#f8f9fa]">
-            <i class="fas fa-plus"></i>
-        </button>
-        <button onclick="window.location.href='history.html'" class="flex flex-col items-center gap-1 text-slate-400">
-            <i class="fas fa-history text-xl"></i>
-            <span class="text-[10px] font-bold">History</span>
-        </button>
-        <button onclick="window.location.href='profile.html'" class="flex flex-col items-center gap-1 text-slate-400">
-            <i class="fas fa-user text-xl"></i>
-            <span class="text-[10px] font-bold">Profile</span>
-        </button>
+        <button onclick="window.location.href='dashboard.html'" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold">Home</span></button>
+        <button onclick="window.location.href='plans.html'" class="flex flex-col items-center gap-1 text-blue-600"><i class="fas fa-chart-pie text-xl"></i><span class="text-[10px] font-bold">Plans</span></button>
+        <button onclick="window.location.href='deposit.html'" class="bg-blue-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg -mt-8 border-4 border-[#f8f9fa]"><i class="fas fa-plus"></i></button>
+        <button onclick="window.location.href='history.html'" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-history text-xl"></i><span class="text-[10px] font-bold">History</span></button>
+        <button onclick="window.location.href='profile.html'" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-user text-xl"></i><span class="text-[10px] font-bold">Profile</span></button>
     </div>
 
     <script>
-        // --- API CONFIGURATION ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbww_t4wSB8cwpFNWuD5TwrJmX5HGI4eHlu6XOk4b3v297MrVq-xd5Pb7uQEUpA-B93IlA/exec";
-        
-        // --- SESSION GUARD ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbx6iX5Tj1mOXw2r06ghzuvfg9GktRvPE8bvKsyoXNcIs54mobNY2WOdDZ-Eh24oExgz/exec";
         const userToken = JSON.parse(localStorage.getItem('wh_user'));
-        if(!userToken || !userToken.id) {
-            window.location.href = 'login.html';
-        }
+        
+        if(!userToken || !userToken.id) window.location.href = 'login.html';
 
         async function init() {
             document.getElementById('user-email-display').innerText = userToken.id;
-            
             try {
                 const res = await fetch(API_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ 
-                        action: 'getAccountData', // Action defined in plans.gs
-                        email: userToken.id 
-                    }) 
+                    body: JSON.stringify({ action: 'getAccountData', email: userToken.id }) 
                 });
                 const data = await res.json();
                 
-                // Update Balance
                 document.getElementById('u-balance').innerText = `$${Number(data.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
                 
-                // Render Plans
-                renderActivePlans(data.plans);
+                renderActivePlans(data.plans || []);
+                renderMarketplace(data.marketplace || []);
             } catch (err) {
                 console.error("Fetch Error:", err);
             }
@@ -199,86 +114,72 @@
 
         function renderActivePlans(plans) {
             const container = document.getElementById('active-plans-container');
-            
-            if(!plans || plans.length === 0) {
-                container.innerHTML = `
-                <div class="bg-white p-12 rounded-3xl border border-dashed border-slate-200 text-center text-slate-400 col-span-full">
-                    <p class="text-xs font-black uppercase tracking-widest mb-1">No active investments</p>
-                    <p class="text-[10px]">Select a plan below to start growing your wealth.</p>
-                </div>`;
+            if(plans.length === 0) {
+                container.innerHTML = `<div class="bg-white p-6 rounded-3xl border border-dashed text-center text-slate-400 col-span-full"><p class="text-[10px] font-bold uppercase tracking-widest">No active investments</p></div>`;
                 return;
             }
-
             container.innerHTML = plans.map(p => {
-                const expiry = new Date(p.expiry);
-                const daysRemaining = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
-                const progress = Math.max(5, ((30 - daysRemaining) / 30) * 100);
-
+                const daysRemaining = Math.max(0, Math.ceil((new Date(p.expiry) - new Date()) / (1000 * 60 * 60 * 24)));
                 return `
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h4 class="font-bold text-slate-800">${p.name}</h4>
-                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Active Investment</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Ends in</p>
-                            <p class="text-sm font-black text-slate-800">${daysRemaining} Days</p>
-                        </div>
+                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between mb-3">
+                        <span class="text-xs font-black text-slate-800">${p.name}</span>
+                        <span class="text-[10px] text-blue-600 font-bold">${daysRemaining}D LEFT</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-4">
-                        <div class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width: ${progress}%"></div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="text-[10px] text-slate-500 font-bold uppercase">Locked: $${Number(p.amount).toLocaleString()}</div>
-                        <div class="text-[10px] font-black text-green-600 uppercase">Maturity: $${Number(p.payout).toFixed(2)}</div>
+                    <div class="flex justify-between text-[10px] font-bold">
+                        <span class="text-slate-400">$${Number(p.amount).toLocaleString()} LOCKED</span>
+                        <span class="text-green-600">ROI: $${Number(p.payout).toFixed(2)}</span>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        async function processPurchase(planName, amount, rate, category) {
-            if(!confirm(`Invest $${amount} into ${planName}? Funds will be locked for 30 days.`)) return;
+        function renderMarketplace(plans) {
+            const container = document.getElementById('marketplace-container');
+            if(plans.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">No plans configured in Spreadsheet.</div>`;
+                return;
+            }
+            container.innerHTML = plans.map(p => `
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between plan-card hover:border-blue-400">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-${p.color || 'blue-600'}">
+                                <i class="fas ${p.icon || 'fa-chart-pie'} text-lg"></i>
+                            </div>
+                            <span class="bg-blue-50 text-blue-600 text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">${p.category}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg">${p.name}</h4>
+                        <p class="text-3xl font-black text-blue-600 mb-2">${(p.rate * 100).toFixed(0)}% <span class="text-[10px] text-slate-400 font-normal">/${p.duration}d</span></p>
+                        <p class="text-[10px] text-slate-500 leading-relaxed mb-4">${p.desc}</p>
+                    </div>
+                    <button onclick="processPurchase('${p.id}', '${p.name}', ${p.price})" class="w-full mt-4 bg-slate-900 text-white py-3 rounded-2xl font-black text-[10px] tracking-widest hover:bg-blue-600 transition-all">INVEST $${p.price}</button>
+                </div>
+            `).join('');
+        }
 
+        async function processPurchase(planId, planName, price) {
+            if(!confirm(`Confirm $${price} investment for ${planName}?`)) return;
             const btn = event.target;
-            const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Processing...`;
-
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
             try {
                 const res = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        action: 'buyInvestment',
-                        email: userToken.id,
-                        planName: planName,
-                        amount: amount,
-                        rate: rate,
-                        category: category
-                    })
+                    body: JSON.stringify({ action: 'buyInvestment', email: userToken.id, planId: planId })
                 });
                 const result = await res.json();
-                
-                if(result.status === 'success') {
-                    alert(result.msg);
-                    init(); // Refresh data
-                } else {
-                    alert("Error: " + result.msg);
-                }
+                alert(result.msg);
+                if(result.status === 'success') init();
             } catch (err) {
-                alert("Database connection error. Check your internet.");
+                alert("Network error.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = `INVEST $${price}`;
             }
         }
 
-        function logout() { 
-            localStorage.removeItem('wh_user'); 
-            window.location.href = 'login.html'; 
-        }
-
-        // Initialize on load
+        function logout() { localStorage.removeItem('wh_user'); window.location.href = 'login.html'; }
         init();
     </script>
 </body>
